@@ -1,0 +1,51 @@
+{
+  "GeneralSettings": {
+    "SuggestedBots": 50,
+    "MaximumCPM": 0,
+    "SaveEmptyCaptures": false,
+    "ReportLastCaptchaOnRetry": false,
+    "ContinueStatuses": [
+      "SUCCESS",
+      "NONE"
+    ]
+  },
+  "ProxySettings": {
+    "UseProxies": false,
+    "MaxUsesPerProxy": 0,
+    "BanLoopEvasion": 100,
+    "BanProxyStatuses": [
+      "BAN",
+      "ERROR"
+    ],
+    "AllowedProxyTypes": [
+      0,
+      1,
+      3,
+      2
+    ]
+  },
+  "InputSettings": {
+    "CustomInputs": []
+  },
+  "DataSettings": {
+    "AllowedWordlistTypes": [
+      "Credentials"
+    ],
+    "UrlEncodeDataAfterSlicing": false,
+    "DataRules": [],
+    "Resources": [],
+    "AllowedWordlistTypesString": "Credentials"
+  },
+  "BrowserSettings": {
+    "QuitBrowserStatuses": [],
+    "Headless": true,
+    "CommandLineArgs": "--disable-notifications",
+    "IgnoreHttpsErrors": false,
+    "LoadOnlyDocumentAndScript": false,
+    "DismissDialogs": false,
+    "BlockedUrls": []
+  },
+  "ScriptSettings": {
+    "CustomUsings": []
+  }
+}

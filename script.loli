@@ -1,0 +1,95 @@
+BLOCK:RandomString
+LABEL:@coder_debojit
+  input = "?n?n?n?n?n?n?n?n?n?n?n?n?n?n?n?n?n?n?n?n?n?n?n?n?n?n?n?n?n?n?n?n"
+  => VAR @rnd
+ENDBLOCK
+
+BLOCK:HashString
+LABEL:@coder_debojit
+  input = $"{\"language\":0,\"logintype\":\"mobile\",\"phonetype\":-1,\"pwd\":\"<input.PASS>\",\"random\":\"<rnd>\",\"username\":\"91<input.USER>\"}"
+  => VAR @deb
+ENDBLOCK
+
+BLOCK:ToUppercase
+LABEL:@coder_debojit
+  input = $"<deb>"
+  => VAR @sig
+ENDBLOCK
+
+BLOCK:CurrentUnixTime
+LABEL:@coder_debojit
+  => VAR @time
+ENDBLOCK
+
+BLOCK:HttpRequest
+LABEL:@coder_debojit
+  url = "https://91clubapi.com/api/webapi/Login"
+  method = POST
+  TYPE:STANDARD
+  $"{\"username\":\"91<input.USER>\",\"pwd\":\"<input.PASS>\",\"phonetype\":-1,\"logintype\":\"mobile\",\"language\":0,\"random\":\"<rnd>\",\"signature\":\"<sig>\",\"timestamp\":\"<time>\"}"
+  "application/json"
+ENDBLOCK
+
+BLOCK:Keycheck
+LABEL:@coder_debojit
+  KEYCHAIN SUCCESS OR
+    STRINGKEY @data.SOURCE Contains "\"msg\":\"Succeed\""
+  KEYCHAIN FAIL OR
+    STRINGKEY @data.SOURCE Contains "\"token\":null,"
+    STRINGKEY @data.SOURCE Contains "Wrong account or password"
+ENDBLOCK
+
+BLOCK:Parse
+LABEL:@coder_debojit
+  input = @data.SOURCE
+  leftDelim = "\"token\":\""
+  rightDelim = "\",\""
+  MODE:LR
+  => VAR @tkn
+ENDBLOCK
+
+BLOCK:HashString
+LABEL:@coder_debojit
+  input = $"{\"language\":0,\"random\":\"<rnd>\"}"
+  => VAR @sigg
+ENDBLOCK
+
+BLOCK:ToUppercase
+LABEL:@coder_debojit
+  input = @sigg
+  => VAR @sig1
+ENDBLOCK
+
+BLOCK:HttpRequest
+LABEL:@coder_debojit
+  url = "https://91clubapi.com/api/webapi/GetUserInfo"
+  method = POST
+  httpLibrary = SystemNet
+  customHeaders = ${("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.116 Safari/537.36"), ("Pragma", "no-cache"), ("Accept", "*/*"), ("Accept-Language", "en-US,en;q=0.8"), ("Authorization", "Bearer <tkn>")}
+  TYPE:STANDARD
+  $"{\"language\":0,\"random\":\"<rnd>\",\"signature\":\"<sig1>\",\"timestamp\":<time>}"
+  "application/json"
+ENDBLOCK
+
+BLOCK:Parse
+LABEL:@coder_debojit
+  input = @data.SOURCE
+  leftDelim = "\"amount\":"
+  rightDelim = ",\""
+  MODE:LR
+  => CAP @WalletBalance
+ENDBLOCK
+
+BLOCK:Keycheck
+LABEL:@coder_debojit
+  KEYCHAIN SUCCESS OR
+    STRINGKEY @WalletBalance NotEqualTo "0.00"
+  KEYCHAIN CUSTOM OR
+    STRINGKEY @WalletBalance Contains "0.00"
+ENDBLOCK
+
+BLOCK:ConstantString
+LABEL:@coder_debojit
+  value = "@coder_debojit"
+  => CAP @ConfigBY
+ENDBLOCK
